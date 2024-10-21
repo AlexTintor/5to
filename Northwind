@@ -1,4 +1,4 @@
--- conocer el lenguaje del inicio de sesion SA o del usuario de windows
+/*-- conocer el lenguaje del inicio de sesion SA o del usuario de windows
 sp_helplogins sa
 go
 -- cambiar el lenguaje del inicio de sesion SA
@@ -7,7 +7,7 @@ sp_defaultlanguage 'ESPARZA\acer' , 'english'
 go
 -- eliminar la base de datos northwind si existe
 --drop database Northwind
-go
+go*/
 create database Northwind
 GO
 use Northwind
