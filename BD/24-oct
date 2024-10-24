@@ -1,0 +1,96 @@
+--funcion de tabla multisentencia que regresa la clave del empleado y el total de dias trabajados desconta...
+create function dbo.fn_diastrabajados ()
+returns @resp table (emp int, dias int) as
+BEGIN 
+	declare @empid int, @fechainicio datetime, @contador int
+
+	select @empid = min(employeeid) from employees
+	while @empid is not null
+	begin 
+		select @fechainicio = hiredate from employees where employeeid = @empid
+		select @contador = 0
+
+		while @fechainicio <= getdate()
+		begin
+			if(datepart(dw, @fechainicio) not in (1,7) )
+				select @contador = @contador + 1
+
+			select @fechainicio = dateadd(dd,1,@fechainicio)
+		end
+		insert @resp values (@empid, @contador)
+		select @empid = min(employeeid) from employees where employeeid > @empid
+	end
+	return
+end
+go
+--ejecucion
+select Nombre = e.FirstName+' '+e.LastName, d.dias
+from dbo.fn_diastrabajados() d
+inner join Employees e on e.EmployeeID=d.emp
+
+--Tabla 
+--los productos
+create function dbo.fn_empleadosproductor()
+returns @resp table(nombreEmp varchar(100), productos varchar(4000))
+as
+begin
+	declare @emp int
+
+	select @emp = min(emp) from employees
+	while employeeid = @emp
+	begin
+		delete @prod
+
+		insert @prod
+		select p.productname
+		from [Order Details] d
+		inner join orders o on o.OrderID = d.OrderID
+		inner join products p on p.ProductID = d.ProductID
+		where o.EmployeeID = @emp
+		group by p.ProductName
+		order by 1
+
+		select @nomprod = ''
+		select @nomprod = @nomprod+', '+nomprod from @prod
+
+		insert @resp values (@nombreEmp, @nomprod)
+
+		select @emp = min(employeeid) from Employees where EmployeeID>@emp
+	end
+	return
+end--le falta
+go
+select * from dbo.fn_empleadosproductos()
+
+
+--funcion multisentencia que reciba el año y regrese TODOS los meses y el importe total de la venta
+create function dbo.fn_importeMeses(@año int)
+returns @resp table (clave int, nombremes varchar(20), total numeric (12,2)) as
+begin
+	declare @m table (clave int, nombre varchar(50))
+	insert @m values (1, 'Ene')
+	insert @m values (2, 'Feb')
+	insert @m values (3, 'Mar')
+	insert @m values (4, 'Abr')
+	insert @m values (5, 'May')
+	insert @m values (6, 'Jun')
+	insert @m values (7, 'Jul')
+	insert @m values (8, 'Ago')
+	insert @m values (9, 'Sep')
+	insert @m values (10, 'Oct')
+	insert @m values (11, 'Nov')
+	insert @m values (12, 'Dic')
+
+	insert @resp
+	select m.clave, m.nombre,
+	isnull(sum(d.quantity*d.unitprice), 0)
+	from [Order Details] d
+	right outer join orders o on o.OrderID = d.OrderID
+	right outer join @m m on m.clave = datepart(mm, o.OrderDate) and year(o.OrderDate) = @año
+	group by m.clave, m.nombre
+	order by 1
+	return
+end
+--Ejecucion
+select * from dbo.fn_importeMeses(1997)
+	
