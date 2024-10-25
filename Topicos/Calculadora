@@ -1,0 +1,226 @@
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+
+public class Calculadora extends JFrame implements ActionListener {
+    private JTextField display;
+    private JPanel panelBotones;
+    private JButton[] botonesNumeros = new JButton[10];
+    private JButton[] botonesOperaciones = new JButton[4];
+    private JButton botonIgual;
+    private JButton botonBorrar;
+    private JButton botonPunto;
+    private String operacion;
+    private double valor1;
+    private boolean nuevaOperacion;
+    private boolean errorMostrado;
+
+    public Calculadora() {
+        setTitle("Calculadora");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setSize(300, 400);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        display();
+        botones();
+        setVisible(true);
+    }
+
+    public void display() {
+        display = new JTextField();
+        display.setEditable(false);
+        display.setPreferredSize(new Dimension(50, 100));
+        display.setHorizontalAlignment(SwingConstants.RIGHT);
+        add(display, BorderLayout.NORTH);
+    }
+
+    public void botones() {
+        panelBotones = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.BOTH;
+    
+        // Ajuste del tamaño de los botones
+        Dimension buttonSize = new Dimension(100, 100);  // Cambiar a un tamaño más grande
+    
+        // Botones Operacionales (+, -, *, /)
+        String[] simbolos = { "+", "-", "x", "/" };
+        for (int i = 0; i < botonesOperaciones.length; i++) {
+            botonesOperaciones[i] = new JButton(simbolos[i]);
+            botonesOperaciones[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesOperaciones[i].addActionListener(this);
+            gbc.gridx = i;
+            gbc.gridy = 0;
+            panelBotones.add(botonesOperaciones[i], gbc);
+        }
+    
+        // Botones numéricos (7, 8, 9)
+        gbc.gridy = 1;
+        for (int i = 7; i <= 9; i++) {
+            botonesNumeros[i] = new JButton("" + i);
+            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].addActionListener(this);
+            gbc.gridx = i - 7;
+            panelBotones.add(botonesNumeros[i], gbc);
+        }
+    
+        // Botón AC
+        botonBorrar = new JButton("AC");
+        botonBorrar.setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonBorrar.addActionListener(this);
+        gbc.gridx = 3;
+        gbc.gridy = 1;
+        gbc.gridheight = 2;
+        panelBotones.add(botonBorrar, gbc);
+        gbc.gridheight = 1;
+    
+        // Botones numéricos (4, 5, 6)
+        gbc.gridy = 2;
+        for (int i = 4; i <= 6; i++) {
+            botonesNumeros[i] = new JButton("" + i);
+            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].addActionListener(this);
+            gbc.gridx = i - 4;
+            panelBotones.add(botonesNumeros[i], gbc);
+        }
+    
+        // Botones numéricos (1, 2, 3)
+        gbc.gridy = 3;
+        for (int i = 1; i <= 3; i++) {
+            botonesNumeros[i] = new JButton("" + i);
+            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].addActionListener(this);
+            gbc.gridx = i - 1;
+            panelBotones.add(botonesNumeros[i], gbc);
+        }
+    
+        // Botón Igual
+        botonIgual = new JButton("=");
+        botonIgual.setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonIgual.addActionListener(this);
+        gbc.gridx = 3;
+        gbc.gridy = 3;
+        gbc.gridheight = 2;
+        panelBotones.add(botonIgual, gbc);
+        gbc.gridheight = 1;
+    
+        // Botón numérico 0 y punto (.).
+        gbc.gridy = 4;
+        gbc.gridx = 1;
+        botonesNumeros[0] = new JButton("0");
+        botonesNumeros[0].setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonesNumeros[0].addActionListener(this);
+        panelBotones.add(botonesNumeros[0], gbc);
+    
+        gbc.gridx = 2;
+        botonPunto = new JButton(".");
+        botonPunto.setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonPunto.addActionListener(this);
+        panelBotones.add(botonPunto, gbc);
+    
+        add(panelBotones, BorderLayout.CENTER);
+    }
+    
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (errorMostrado || nuevaOperacion) {
+            display.setText("");
+            errorMostrado = false;
+            nuevaOperacion = false;
+            valor1 = 0;
+            operacion = null;
+        }
+
+        // Botones numéricos
+        for (int i = 0; i < botonesNumeros.length; i++) {
+            if (e.getSource() == botonesNumeros[i]) {
+                display.setText(display.getText() + botonesNumeros[i].getText());
+                return;
+            }
+        }
+
+        // Botones Operacionales
+        for (int i = 0; i < botonesOperaciones.length; i++) {
+            if (e.getSource() == botonesOperaciones[i]) {
+                if (!display.getText().isEmpty()) {
+                    if (operacion != null) {
+                        realizarOperacion();
+                    }
+                    valor1 = Double.parseDouble(display.getText());
+                    operacion = botonesOperaciones[i].getText();
+                    display.setText(display.getText() + operacion);
+                }
+                return;
+            }
+        }
+
+        // Botón igual
+        if (e.getSource() == botonIgual) {
+            realizarOperacion();
+            nuevaOperacion = true;
+        }
+
+        // Botón borrar (AC)
+        if (e.getSource() == botonBorrar) {
+            borrarUltimoCaracter();
+        }
+
+        // Botón punto (.)
+        if (e.getSource() == botonPunto) {
+            if (!display.getText().contains(".")) {
+                display.setText(display.getText() + ".");
+            }
+        }
+    }
+
+    private void realizarOperacion() {
+        String textoDisplay = display.getText();
+        int operadorIndex = textoDisplay.indexOf(operacion);
+        if (operadorIndex != -1) {
+            double valor2 = Double.parseDouble(textoDisplay.substring(operadorIndex + 1));
+            double resultado = 0;
+            switch (operacion) {
+                case "+":
+                    resultado = valor1 + valor2;
+                    break;
+                case "-":
+                    resultado = valor1 - valor2;
+                    break;
+                case "x":
+                    resultado = valor1 * valor2;
+                    break;
+                case "/":
+                    if (valor2 != 0) {
+                        resultado = valor1 / valor2;
+                    } else {
+                        display.setText("Error");
+                        errorMostrado = true;
+                        return;
+                    }
+                    break;
+            }
+            display.setText(String.valueOf(resultado));
+            valor1 = resultado;
+            operacion = null;
+        }
+    }
+
+    private void borrarUltimoCaracter() {
+        String textoDisplay = display.getText();
+        if (!textoDisplay.isEmpty()) {
+            display.setText(textoDisplay.substring(0, textoDisplay.length() - 1));
+
+            if (display.getText().isEmpty()) {
+                operacion = null;
+                valor1 = 0;
+            }
+        }
+    }
+
+}
