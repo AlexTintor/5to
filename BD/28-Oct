@@ -1,0 +1,63 @@
+-------------------------------------------------------------------------------TRIGGERS
+¿Que es un trigger/Disparador?
+Es un objeto que se asocia con tablas y se almacena en la base de datos.
+INSERT UPDATE DELETE hacen que se dispare el TRIGGER
+° Automatizar restricciones
+° Guardar historial
+° Sincronizar campos
+° Deshacer tranzaciones
+
+--Creacion
+CREATE TRIGGER nombre_trigger
+ON Nombre_tabla
+[WITH ]..................
+..........
+.........
+.......
+
+--Ejemplo de trigger de insercion en tabla materiales
+create table Materiales
+(Clave int primary key, nombre char(50), precio numeric(12,2))
+go
+create trigger TR_Materiales_lns
+on Materiales for insert as
+	select 'se ejecuto el trigger al insertar'
+	select * from inserted
+go
+--EJECUCION
+insert materiales values(1, 'Lapiz', 9)
+insert materiales values(2, 'Bote', 9)
+
+--Insercion masiva
+insert materiales
+select productid, productname, UnitPrice  from products
+where ProductID > 2
+
+select * from Materiales
+
+--				Ejemplo trigger de ELIMINACION en tabla materiales
+create trigger TR_Materiales_Del
+on Materiales for Delete as
+	select 'Se ejecuto el trigger al eliminar'
+	select * from Deleted
+go
+--Ejecucion
+delete Materiales where Clave = 55
+delete Materiales where Clave = 66
+delete Materiales where Clave between 70 and 75
+
+--				Ejemplo de trigger de ACTUALIZACION
+create trigger TR_Materiales_Upd
+on Materiales for Update as
+	select 'se ejecuto el trigger al actualizar'
+	select * from inserted --contiene el nuevo valor
+	select * from deleted --contiene el viejo valor
+go
+--ejecucion
+update Materiales set nombre = 'Cepillo', precio = 12 where Clave = 25
+update Materiales set nombre = 'Cepillo', precio = 12 where Clave = 15
+
+--ELIMINACION
+drop trigger TR_materiales_upd
+drop trigger TR_materiales_ins
+drop trigger TR_materiales_del
