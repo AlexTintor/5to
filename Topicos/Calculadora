@@ -264,8 +264,14 @@ public class Calculadora extends JFrame implements ActionListener {
                 break;
         }
         
-        display.setText(String.valueOf(resultado)); // Muestra el resultado
-        operacion = null; // Reinicia la operación
+         // Muestra el resultado, sin el punto decimal si es un número entero
+        if (resultado == (int) resultado) {
+            display.setText(String.valueOf((int) resultado)); // Convierte a entero
+        } else {
+            display.setText(String.valueOf(resultado)); // Muestra el resultado como decimal
+        }
+    
+    operacion = null; // Reinicia la operación
     }
 
     private void borrarUltimoCaracter() {
