@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class Calculadora extends JFrame implements ActionListener {
@@ -13,7 +15,8 @@ public class Calculadora extends JFrame implements ActionListener {
     private JButton[] botonesNumeros = new JButton[10];
     private JButton[] botonesOperaciones = new JButton[4];
     private JButton botonIgual;
-    private JButton botonBorrar;
+    private JButton botonAC;
+    private JButton botonC, botonMod;
     private JButton botonPunto;
     private String operacion;
     private double valor1;
@@ -33,9 +36,21 @@ public class Calculadora extends JFrame implements ActionListener {
 
     public void display() {
         display = new JTextField();
-        display.setEditable(false);
+        display.setEditable(true);
         display.setPreferredSize(new Dimension(50, 100));
         display.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        // Agregar KeyListener para permitir solo números y operadores
+        display.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != '+' && c != '-' && c != '*' && c != '/' && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
+            }
+        });
+
         add(display, BorderLayout.NORTH);
     }
 
@@ -46,13 +61,13 @@ public class Calculadora extends JFrame implements ActionListener {
         gbc.fill = GridBagConstraints.BOTH;
 
         // Ajuste del tamaño de los botones
-        Dimension buttonSize = new Dimension(100, 100);  // Cambiar a un tamaño más grande
+        Dimension buttonSize = new Dimension(100, 100);
 
         // Botones Operacionales (+, -, *, /)
         String[] simbolos = { "+", "-", "x", "/" };
         for (int i = 0; i < botonesOperaciones.length; i++) {
             botonesOperaciones[i] = new JButton(simbolos[i]);
-            botonesOperaciones[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesOperaciones[i].setPreferredSize(buttonSize);
             botonesOperaciones[i].addActionListener(this);
             gbc.gridx = i;
             gbc.gridy = 0;
@@ -63,27 +78,33 @@ public class Calculadora extends JFrame implements ActionListener {
         gbc.gridy = 1;
         for (int i = 7; i <= 9; i++) {
             botonesNumeros[i] = new JButton("" + i);
-            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].setPreferredSize(buttonSize);
             botonesNumeros[i].addActionListener(this);
             gbc.gridx = i - 7;
             panelBotones.add(botonesNumeros[i], gbc);
         }
 
         // Botón AC
-        botonBorrar = new JButton("AC");
-        botonBorrar.setPreferredSize(buttonSize);  // Ajustar el tamaño
-        botonBorrar.addActionListener(this);
-        gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.gridheight = 2;
-        panelBotones.add(botonBorrar, gbc);
-        gbc.gridheight = 1;
+        botonAC = new JButton("AC");
+        botonAC.setPreferredSize(buttonSize);
+        botonAC.addActionListener(this);
+        gbc.gridx = 3; // Posición en la última columna de la fila
+        gbc.gridy = 1; // Mantener en la segunda fila
+        panelBotones.add(botonAC, gbc);
+        
+        // Botón Mod
+        botonMod = new JButton("Mod");
+        botonMod.setPreferredSize(buttonSize);
+        botonMod.addActionListener(this);
+        gbc.gridx = 3; // Posición en la última columna de la fila
+        gbc.gridy = 2; // Mantener en la segunda fila
+        panelBotones.add(botonMod, gbc);
 
         // Botones numéricos (4, 5, 6)
         gbc.gridy = 2;
         for (int i = 4; i <= 6; i++) {
             botonesNumeros[i] = new JButton("" + i);
-            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].setPreferredSize(buttonSize);
             botonesNumeros[i].addActionListener(this);
             gbc.gridx = i - 4;
             panelBotones.add(botonesNumeros[i], gbc);
@@ -93,7 +114,7 @@ public class Calculadora extends JFrame implements ActionListener {
         gbc.gridy = 3;
         for (int i = 1; i <= 3; i++) {
             botonesNumeros[i] = new JButton("" + i);
-            botonesNumeros[i].setPreferredSize(buttonSize);  // Ajustar el tamaño
+            botonesNumeros[i].setPreferredSize(buttonSize);
             botonesNumeros[i].addActionListener(this);
             gbc.gridx = i - 1;
             panelBotones.add(botonesNumeros[i], gbc);
@@ -101,7 +122,7 @@ public class Calculadora extends JFrame implements ActionListener {
 
         // Botón Igual
         botonIgual = new JButton("=");
-        botonIgual.setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonIgual.setPreferredSize(buttonSize);
         botonIgual.addActionListener(this);
         gbc.gridx = 3;
         gbc.gridy = 3;
@@ -109,19 +130,27 @@ public class Calculadora extends JFrame implements ActionListener {
         panelBotones.add(botonIgual, gbc);
         gbc.gridheight = 1;
 
-        // Botón numérico 0 y punto (.).
+        // Botón numérico 0 y punto (.)
         gbc.gridy = 4;
         gbc.gridx = 1;
         botonesNumeros[0] = new JButton("0");
-        botonesNumeros[0].setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonesNumeros[0].setPreferredSize(buttonSize);
         botonesNumeros[0].addActionListener(this);
         panelBotones.add(botonesNumeros[0], gbc);
 
         gbc.gridx = 2;
         botonPunto = new JButton(".");
-        botonPunto.setPreferredSize(buttonSize);  // Ajustar el tamaño
+        botonPunto.setPreferredSize(buttonSize);
         botonPunto.addActionListener(this);
         panelBotones.add(botonPunto, gbc);
+
+        // Botón C para borrar uno por uno
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        botonC = new JButton("C");
+        botonC.setPreferredSize(buttonSize);
+        botonC.addActionListener(this);
+        panelBotones.add(botonC, gbc);
 
         add(panelBotones, BorderLayout.CENTER);
     }
@@ -137,7 +166,7 @@ public class Calculadora extends JFrame implements ActionListener {
         for (int i = 0; i < botonesNumeros.length; i++) {
             if (e.getSource() == botonesNumeros[i]) {
                 if (nuevaOperacion) {
-                    display.setText(""); // Limpiar el display al iniciar nueva operación
+                    display.setText("");
                     nuevaOperacion = false;
                 }
                 display.setText(display.getText() + botonesNumeros[i].getText());
@@ -150,11 +179,11 @@ public class Calculadora extends JFrame implements ActionListener {
             if (e.getSource() == botonesOperaciones[i]) {
                 if (!display.getText().isEmpty()) {
                     if (operacion != null && !nuevaOperacion) {
-                        realizarOperacion(); // Si ya hay una operación pendiente, realizarla antes
+                        realizarOperacion();
                     }
                     valor1 = Double.parseDouble(display.getText());
                     operacion = botonesOperaciones[i].getText();
-                    nuevaOperacion = true; // Indicar que estamos en una nueva operación
+                    nuevaOperacion = true;
                 }
                 return;
             }
@@ -164,16 +193,38 @@ public class Calculadora extends JFrame implements ActionListener {
         if (e.getSource() == botonIgual) {
             if (operacion != null) {
                 realizarOperacion();
-                nuevaOperacion = true; // Permitir continuar con una nueva operación
+                nuevaOperacion = true;
             }
         }
 
-        // Botón borrar (AC)
-        if (e.getSource() == botonBorrar) {
+        // Botón AC (borra todo)
+        if (e.getSource() == botonAC) {
+            display.setText("");
+            operacion = null;
+            valor1 = 0;
+            nuevaOperacion = false;
+            return;
+        }
+
+        // Botón Mod (residuo de división)
+        if (e.getSource() == botonMod) {
+            if (!display.getText().isEmpty()) {
+                if (operacion != null && !nuevaOperacion) {
+                    realizarOperacion(); // Realiza la operación anterior
+                }
+                valor1 = Double.parseDouble(display.getText());
+                operacion = "Mod"; // Establecer la operación como "Mod"
+                nuevaOperacion = true;
+            }
+            return;
+        }
+
+        // Botón C (borrar uno por uno)
+        if (e.getSource() == botonC) {
             borrarUltimoCaracter();
         }
 
-        // Botón punto (.).
+        // Botón punto (.)
         if (e.getSource() == botonPunto) {
             if (!display.getText().contains(".")) {
                 display.setText(display.getText() + ".");
@@ -182,46 +233,49 @@ public class Calculadora extends JFrame implements ActionListener {
     }
 
     private void realizarOperacion() {
-        String textoDisplay = display.getText();
-        int operadorIndex = textoDisplay.indexOf(operacion);
-        if (operadorIndex != -1 || !nuevaOperacion) {
-            double valor2 = Double.parseDouble(textoDisplay.substring(operadorIndex + 1));
-            double resultado = 0;
-            switch (operacion) {
-                case "+":
-                    resultado = valor1 + valor2;
-                    break;
-                case "-":
-                    resultado = valor1 - valor2;
-                    break;
-                case "x":
-                    resultado = valor1 * valor2;
-                    break;
-                case "/":
-                    if (valor2 != 0) {
-                        resultado = valor1 / valor2;
-                    } else {
-                        display.setText("Error");
-                        errorMostrado = true;
-                        return;
-                    }
-                    break;
-            }
-            display.setText(String.valueOf(resultado));
-            valor1 = resultado;
-            operacion = null;
+        if (operacion == null) {
+            return; // Salir si no hay operación
         }
+        
+        double resultado = 0;
+        double valor2 = Double.parseDouble(display.getText());
+        
+        switch (operacion) {
+            case "+":
+                resultado = valor1 + valor2;
+                break;
+            case "-":
+                resultado = valor1 - valor2;
+                break;
+            case "x":
+                resultado = valor1 * valor2;
+                break;
+            case "/":
+                if (valor2 != 0) {
+                    resultado = valor1 / valor2;
+                } else {
+                    display.setText("Error");
+                    errorMostrado = true;
+                    return;
+                }
+                break;
+            case "Mod":
+                resultado = valor1 % valor2; // Realiza la operación de módulo
+                break;
+        }
+        
+        display.setText(String.valueOf(resultado)); // Muestra el resultado
+        operacion = null; // Reinicia la operación
     }
 
     private void borrarUltimoCaracter() {
-        String textoDisplay = display.getText();
-        if (!textoDisplay.isEmpty()) {
-            display.setText(textoDisplay.substring(0, textoDisplay.length() - 1));
-
-            if (display.getText().isEmpty()) {
-                operacion = null;
-                valor1 = 0;
-            }
+        String textoActual = display.getText();
+        if (!textoActual.isEmpty()) {
+            display.setText(textoActual.substring(0, textoActual.length() - 1));
         }
+    }
+
+    public static void main(String[] args) {
+        new Calculadora();
     }
 }
