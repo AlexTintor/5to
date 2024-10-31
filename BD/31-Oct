@@ -1,0 +1,62 @@
+--Sentencia if update
+--Valida que no se modifique un camoi dentro de un trigger
+if update(nombre_columna) and | or update(nombre_columna)
+begin
+	sentencias_select
+end
+else
+begin
+	sentencias_select
+end
+
+--Validar qye el nombre de los materiales no se actualice
+create trigger tr_materiales_ins3
+on materiales for update as
+if update (nombre)
+begin
+	rollback tran
+	raiserror('No se puede actualizar el nombre del material',16,1)
+end
+select * from materiales 
+--no se actualiza el nombre 
+update materiales set nombre = 'Queso Cab' where clave = 46
+update materiales set nombre = 'Queso Cab', Precio = 200 where clave = 46
+--si se actualiza el precio
+update materiales set precio=55 where clave = 46
+go
+select * from materiales where clave = 46
+go
+--eliminamos triggers
+drop trigger tr_materiales_ins3
+drop trigger tr_materiales_upd
+
+--agregamos el campo contador para llevar el numero de actualizaciones
+alter table materiales add contador int
+go
+update materiales set contador = 0
+go
+alter table materiales add constraint df_mat_contador default(0) for contador
+go
+
+create trigger tr_materiales_conta
+on materiales for update as
+declare @clave int, @conta int
+
+select @clave = clave, @conta = isnull(contador, 0) from inserted
+
+if update(nombre)
+begin 
+	if @conta > 0
+	begin
+		rollback tran
+		raiserror('No se puede actualizar más de una vez el nombre',16,1)
+	end
+	else
+		update materiales set contador = @conta + 1 where clave = @clave
+end
+go
+
+
+update materiales set nombre = 'Assss' where clave = 1
+go
+
