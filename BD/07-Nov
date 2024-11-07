@@ -1,0 +1,33 @@
+--++++++++++++++++++++++++++++++++++++++++++|	TRANSACCIONES	|
+--Se usa GO para separar LOTES
+/*
+Transaccion 
+1. Atómica
+	-Cuando se realiza o aborta COMPLETAMENTE
+	ej: update cuenta bancaria donante - $1,000
+		update cuenta bancaria receptor +$1,000
+2. Cohente
+	-...
+	ej: si falla la transaccion anterior, se debe reponer el saldo en caso
+		que se le halla restado
+3. Aislada
+	-No interactua ni entra en conflicto con otra transaccion
+	ej: Al acceder a una cuenta bancaria solo EL podra usar esa cuanta en ese momento
+4. Durable
+	-...(No las podemos modificar)
+*/
+--Transaccion explicita
+begin tran
+	update products set unitprice = 100
+
+	select unitprice from products
+rollback tran
+--Ejemplo de como si se ejecuta esta transaccion no dejara a otro usuario acceder a la tabla
+
+1. Transaccion automatica
+	-Transacciones tras banbalinas
+	
+2. Transacciones explicitas
+	-nose
+
+
