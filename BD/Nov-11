@@ -5,7 +5,7 @@ begin tran t1
 select @@trancount -- marca 1
 
 update Employees set firstname = 'Carlos' where employeeid = 1
-update categories set CategoryName = 'puteria' where CategoryID = 1
+update categories set CategoryName = 'Papeleria' where CategoryID = 1
 
 	save tran punto1
 
