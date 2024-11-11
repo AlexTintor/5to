@@ -1,0 +1,39 @@
+select @@trancount -- marca 0
+
+begin tran t1
+
+select @@trancount -- marca 1
+
+update Employees set firstname = 'Carlos' where employeeid = 1
+update categories set CategoryName = 'puteria' where CategoryID = 1
+
+	save tran punto1
+
+	insert categories(CategoryName, Description) values ('AAAA','AAAAAA')
+
+	select @@TRANCOUNT
+
+	rollback tran punto1
+
+	select @@TRANCOUNT
+
+commit tran t1
+
+select CategoryName from Categories where CategoryID = 1
+
+select @@TRANCOUNT -- regresa 0
+
+begin tran t1 
+select @@TRANCOUNT-- regresa 1
+save tran punto1
+select @@TRANCOUNT -- regresa 1
+rollback tran punto1
+select @@TRANCOUNT -- regresa 1
+begin tran t2
+select @@TRANCOUNT -- regresa 2
+begin tran t3
+select @@TRANCOUNT-- regresa 3
+commit tran	-- Cierra solo la ultima transaccion creada
+select @@TRANCOUNT -- regresa 2
+rollback tran -- cierra todas las transacciones abiertas
+select @@TRANCOUNT-- regresa 0
