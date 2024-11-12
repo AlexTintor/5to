@@ -1,0 +1,24 @@
+--Bloqueos
+Más perjudicial que beneficios.
+No se puede CONSULTAR, ACTUALIZAR, ELIMINAR cuando esta un bloqueo.
+
+(NOLOCK)
+Puede acceder a bloqueos, PERO la informacion obtenida no estara confirmada.
+--select UnitePrice from Products (NOLOCK)
+
+(READPAST)
+En consultas, se salta las lineas que estan bloqueadas, PERO nos dara informacion incompleta.
+--select UnitePrice from Products (READPAST)
+
+(HOLDLOCK)
+Mantiene un bloqueo aunque se libere la transaccion, SOLO para MODIFICACION
+--BEGIN TRAN
+	--SELECT * FROM CATEGORIES (HOLDLOCK)
+--COMIT TRAN
+
+(TABLOCKX)
+Bloqueo exclusivo en TODA la TABLA, PERO SI muestra CONSULTAS
+--BEGIN TRAN
+	--SELECT * FROM CATEGORIES (TABLOCKX) WHERE CATEGORYID = 1
+
+
