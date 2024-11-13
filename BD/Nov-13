@@ -1,0 +1,39 @@
+--Bloqueos a nivel secion
+READ COMMITTED
+Normal
+
+READ UNCOMMITTED
+Funciona igual que NOLOCK, ya no es necesario ponerlo
+(Para leer aunque tenga bloqueo)
+
+REPEATABLE READ
+...
+
+SERIALEZIABLE**
+Impide actualualizaciones, modificaciones, y inserciones
+
+GO
+
+Visualizacion de bloqueos
+-SL_LOCK
+	Muestra:
+	Clave de proceso, clave de BD, etc
+	+El problema es que MANEJA CLAVES
+
+-SP_WHO
+	Es más amigable
+	Devuelve informacion del usuario, seciones, etc.
+	Se usa cuando se quiere conocer la caraga de trabajo en la instancia o ver 
+	si alguno de los procesos esta bloqueado.
+
+*KILL Num_de_Proceso
+Para eliminar dicho proceso (como el ROLLBACK)
+
+go
+
+Interbloqueo
+Un bloqueo doble, A) espera a que se libere B), y B) espera a que se libere A).
+El servidor lo detecta y libera el ultimo. (DeadLocked)
+
+
+
