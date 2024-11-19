@@ -1,0 +1,45 @@
+MODOS DE AUTENTICACION
+
+1-.Modo windows integrado
+	-El que usamos
+2-. Modo de auntenticacion SQL Server
+	-Se tiene un usuario y una constraseña
+	+Se crea el inicio de secion para posteriormente darle acceso a la BD
+  [Inicio de sesión] -> [Usuario de BD] -> [Permisos I/U/D - Select - Exec]
+go
+
+1.- Creaciond de inicio de secion
+	create login login_name WITH
+	password = 'pasword' [HASHED][MUST_CHANGE],
+	SID=sid|
+	DEFAULT_DATABASE=databe|
+	DEFAULT_LANGUAGE=language|
+	CHECK_EXPIRATION={ON/OFF}|
+	CHECK_POLICY={ON/OFF}
+go
+
+SQL Server Autentication
+loginName
+	...
+Hashed
+	...
+CREATE LOGIN login:name FROM WINDOWS
+[WITH
+	DEFAULT_DATABASE=database,
+	DEFAULT_LANGUAGE=language .......]
+
+Modificacion de inicios de sesion
+ALTER LOGIN login_name
+ENABLE|DIABLE|WITH
+	PASSWORD='password'|hashed_password
+	HASHED
+	[OLD_PASSWORD='oldpassword'|
+	MUST_CHANGE|UNLOCK
+	DEFAULT_DATABASE=database.......]
+go
+
+2.- Usuarios de Base de Datos
+
+
+
+
