@@ -1,0 +1,44 @@
+--EJEMPLO 1
+create database ventas
+go
+use ventas
+go
+create table clientes(
+cte int primary key, nombre varchar(50), domicilio varchar(50))
+go
+create table articulos(
+clave int primary key, nombre varchar(50))
+go
+--crear incio de sesion mario
+create login mario with password='123'
+must_change, check_expiration=on
+
+--validar las caracteristcas de mario
+sp_helplogins mario
+
+alter login mario
+with default_database = ventas
+
+--darle acceso al IS mario a la bd ventas
+use ventas create user mario
+go
+
+--GUEST (invitado)
+
+--EJEMPLO 2
+create database envios
+go
+use envios
+go
+create table empleados(
+cte int primary key, nombre varchar(50),
+domicilio varchar(50))
+go
+
+--activamos el usuario GUEST en bd envios
+--el IS Mario se puede conectar a la bd envios
+use envios
+GRANT CONNECT TO GUEST
+
+--desactivar el usuario GUEST en ka bd envios
+REVOKE CONNECT FROM GUEST
