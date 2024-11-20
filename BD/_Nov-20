@@ -42,3 +42,9 @@ GRANT CONNECT TO GUEST
 
 --desactivar el usuario GUEST en ka bd envios
 REVOKE CONNECT FROM GUEST
+
+--
+Sp_srvRolePermission dbcreator
+Sp_srvRolePermission securityadmin
+Sp_srvRolePermission processadmin
+Sp_srvRolePermission setupadmin
