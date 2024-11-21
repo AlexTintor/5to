@@ -1,0 +1,45 @@
+1.- Funciones nivel servidor
+sp_helplogins mario
+--agregar al IS mario a la funcion SECURITYADMIN
+--puede ejecutar el comando create login
+sp_addSRVRoleMember mario, SECURITYADMIN
+
+--agregar al IS mario a la funcion DBCREATOR
+--puede crear BD y ejecutar RESTORE DATABASE
+sp_addSRVRoleMember mario, DBCREATOR
+
+--agregar al IS mario la funcion PROCESSADMIN
+--para que elimine procesos con el comando KILL
+sp_addSRVRoleMember mario, PROCESSADMIN
+
+--agregar al IS mario la funcion SERVERADMIN
+--puede ejecutar el comando SHUTDOWN
+sp_addSRVRoleMember mario, SERVERADMIN
+
+sp_helpRoleMember mario
+sp_dbFixedRolePermission db_securityadmin
+sp_dbFixedRolePermission db_accessadmin
+sp_dbFixedRolePermission db_ddladmin
+sp_dbFixedRolePermission db_backupoperation
+go
+
+--agregar a mario al funcion db_DataReader
+--para que pueda seleccionar todas las tabalas
+use ventas
+sp_AddRoleMember db_DataReader, mario
+
+--para que pueda modificar datos
+use ventas 
+sp_AddRoleMember db_DataWeiter, mario
+
+--para que pueda crear cualquier objeto
+use ventas
+sp_AddRoleMember db_DDLAdmin , mario
+go
+
+--para sacar a mario de ...
+sp_dropRoleMember mario
+
+
+
+
