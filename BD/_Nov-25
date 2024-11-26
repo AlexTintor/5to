@@ -1,0 +1,50 @@
+--Ejemplo 6 GRANT create proc
+--El usuario Mario pueda realizar a base de datos Ventas
+--lo siguinete
+--Pueda crear solamente tablas y procedimientos almacenados
+--en la BD Ventas
+
+--es necesario sacar al usuario Mario de la funcion db_DDLAdmin
+use ventas
+sp_dropRoleMember db_DDLAdmin, mario
+
+--permisos para crear tablas y sp
+Grant Create Proc, Create Table to mario
+
+--es necesario darle permiso para mopdificar el esquema DBO
+Grant Alter on Schema::dbo to mario
+
+	/*Mario >*/
+	use ventas 
+	
+	--si tiene permiso
+	create table prueba(clave int, nombre varchar(100))
+
+	create proc sp_clientes as
+	select * from clientes
+	
+	--no tiene permiso
+	create view vw_clientes as
+	select * from clientes
+	/*Mario <*/
+
+--Ejemplo 7 PUBLIC
+--Si se le da permiso a la funcion PUBLIC de eliminaciobn a la tabla
+-- articulos y actualizacion a la tabla clientes
+--Estos permisops se heredan a Mario y a cualquier usuario en la BD
+use ventas
+Grant Delete on Articulos to PUBLIC
+
+Grant Update on Clientes to PUBLIC
+
+	/*Mario >*/
+	select * from clientes
+
+	delete articulos
+
+	update clientes set nombre = 'Ana' where cte = 1
+	/*Mario <*/
+
+create login agente with password='123'
+must_change, check_expiration=on
+
