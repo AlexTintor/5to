@@ -1,0 +1,88 @@
+--26 Nov 2024
+use envios
+Grant Connect to GUEST
+--creamos una nueva tabla
+create table Articulos (clave int, nombre varchar(20))
+	/* Mario > */
+	use envios
+	select * from empleados
+	select * from articulos
+	--no se puede
+	/* Mario < */
+--se le da permisos de seleccion a todas las tablas en Envios
+--al usuario GUEST
+use envios 
+sp_addRoleMember db_DataReader, GUEST
+--sp_addRoleMember db_DataReader, public //error
+
+--se le da permiso de insercion sobre la tabla empleados a GUEST
+use envios
+Grant Insert on Empleados to GUEST
+Grant Insert on Articulos to GUEST 
+	/* Mario > */
+	insert empleados values(1,'Carlos','Zapata 1')
+	insert empleados values(2,'Felix','Esmeralda 3')
+	insert articulos values(1,'Casa')
+	--no puede 
+	delete empleados 
+	delete articulos
+	update empleados set nombre 'Alex'
+	/* Mario < */
+DIFERENCIA ENTRE GUEST y PUBLIC
+PUBLIC: Solo usuarios REGISTRADOS tendran dichos permisos
+GUEST: TODOS los usuarios tendran permisos, aunque aun no esten registrados
+
+go
+
+CREATE DATABASE PEDIDOS
+
+create login PEDRO with password='123'
+
+--se le da permisos a la BD pedidos
+use pedidos
+CREATE USER PEDRO WITH DEFAULT_SCHEMA=DBO
+
+SP_HELPUSER PEDRO
+--damos permisos de crear tablas y vistas a PEDRO
+use pedidos
+GRANT CREATE TABLE, CREATE VIEW TO PEDRO
+
+--creamos el esquema desarrollo
+USE PEDIDOS
+CREATE SCHEMA DESARROLLO AUTHORIZATION DBO 
+
+--cambiamos a PEDRO al esquema DESARROLLO
+ALTER USER PEDRO WITH DEFAULT_SCHEMA = DESARROLLO
+
+SELECT * FROM ENVIOS
+
+--permisos para modificar el esquema desarrllo
+GRANT ALTER ON SCHEMA::DESARROLLO TO PEDRO
+
+	/* PEDRO > */
+	USE PEDIDOS
+
+	CREATE TABLE ENVIOS 
+	(FOLIO INT, FECHA DATETIME, CTE INT)
+
+	CREATE TABLE DBO.ENVIOS
+	(FOLIODBO INT, FECHA DATETIME, CTE INT)
+
+	CREATE TABLE ARTICULOS
+	(CLAVE INT, NOMBRE VARCHAR(50))
+	/* PEDRO < */
+
+SELECT * FROM ENVIOS
+SELECT * FROM dbo.ENVIOS
+
+SELECT * FROM ARTICULOS--MARCA ERROR
+SELECT * FROM DESARROLLO.ARTICULOS--DEBE SER ASI
+
+--NECESITAMOS CAMBIAR EL ESQUEMA A LA TABLA
+--DESARROLLO.ARTICULOS AL ESQUEMA DBO 
+ALTER SCHEMA DBO TRANSFER DESARROLLO.ARTICULOS
+
+
+
+
+
